@@ -8,6 +8,13 @@ using UnityEngine.UI;
 public class MenuScript : MonoBehaviour
 {
     public InputField IP_input;
+
+    private void ApprovalCheck(byte[] connectionData, ulong clientID, NetworkManager.ConnectionApprovedDelegate callback)
+    {
+        bool approve = System.Text.Encoding.ASCII.GetString(connectionData) == "Pasword1234";
+        callback(true, null, approve, new Vector3(1, 1, 1), Quaternion.identity);
+    }
+
     public void Host()
     {
         NetworkManager.Singleton.StartHost();
