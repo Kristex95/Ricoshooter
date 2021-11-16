@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class PlayerController : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement Parameters")]
     [SerializeField] private float walkSpeed = 6.0f;
-    [SerializeField] private float sprintSpeed = 10.0f;
+    [SerializeField] private float sprintSpeed = 8.0f;
     [SerializeField] private float crouchSpeed = 2.0f;
     [SerializeField] private float slideSpeed = 8.0f;
 
@@ -33,8 +34,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(1, 180)] private float lowerLookLimit = 80.0f;
 
     [Header("Jumping Parameters")]
-    [SerializeField] private float jumpForce = 8.0f;
-    [SerializeField] private float gravity = 30.0f;
+    [SerializeField] private float jumpForce = 7.0f;
+    [SerializeField] private float gravity = 15.0f;
 
     [Header("Crouch Parameters")]
     [SerializeField] private float crouchHeight = 0.5f;
@@ -71,46 +72,57 @@ public class PlayerController : MonoBehaviour
 
     private float rotationX = 0f;
 
+    PhotonView view;
+
     // Start is called before the first frame update
     void Awake()
     {
         PlayerCamera = GetComponentInChildren<Camera>();
         characterController = GetComponent<CharacterController>();
+        view = GetComponent<PhotonView>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (!view.IsMine)
+        {
+            Destroy(GetComponentInChildren<Camera>());
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (CanMove)
+        if (view.IsMine)
         {
-            if(characterController.isGrounded && !IsSliding)
+            if (CanMove)
             {
-                moveDirection.y = -gravity * Time.deltaTime;
+                if (characterController.isGrounded && !IsSliding)
+                {
+                    moveDirection.y = -gravity * Time.deltaTime;
+                }
+                HandleMovementInput();
+                HandleMouseInput();
+
+                //                                              Debug.Log(characterController.isGrounded);
+
+                if (CanJump)
+                {
+                    HandleJump();
+                }
+
+                if (CanCrouch)
+                {
+                    HandleCrouch();
+                }
+
+                if (IsSliding)
+                {
+                    HandleSlide();
+                }
+
+                ApplyFinalMovement();
             }
-            HandleMovementInput();
-            HandleMouseInput();
-
-            //                                              Debug.Log(characterController.isGrounded);
-
-            if (CanJump)
-            {
-                HandleJump();
-            }
-
-            if (CanCrouch)
-            {
-                HandleCrouch();
-            }
-
-            if (IsSliding)
-            {
-                HandleSlide();
-            }
-
-            ApplyFinalMovement();
-        }
+        }  
     }
 
     private void HandleMovementInput()
