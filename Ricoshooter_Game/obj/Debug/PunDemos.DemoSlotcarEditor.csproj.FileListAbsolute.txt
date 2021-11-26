@@ -1,0 +1,2 @@
+F:\Учеба\2-й_Курс\Об'єктно Орієнтоване Програмування\Ricoshooter\Ricoshooter_Game\obj\Debug\PunDemos.DemoSlotcarEditor.csprojAssemblyReference.cache
+F:\Учеба\2-й_Курс\Об'єктно Орієнтоване Програмування\Ricoshooter\Ricoshooter_Game\obj\Debug\PunDemos.DemoSlotcarEditor.csproj.CoreCompileInputs.cache
