@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 public class PlayerControllerRB_2 : MonoBehaviour
 {
@@ -12,6 +12,8 @@ public class PlayerControllerRB_2 : MonoBehaviour
 
     //Other
     private Rigidbody rb;
+
+    [SerializeField] public float hp = 100f;
 
     //Rotation and look
     [Header("Look Parameters")]
@@ -52,28 +54,22 @@ public class PlayerControllerRB_2 : MonoBehaviour
 
     [SerializeField] private GameObject prefab;
 
-    //Photon
-    private PhotonView view;
 
     //Animator
     [SerializeField] Animator animator;
     [SerializeField] GameObject headTarget;
     [SerializeField] Transform pistolRotationPoint;
 
+    private bool Alive = true;
+
 
     void Awake()
     {
-        view = GetComponent<PhotonView>();
         rb = GetComponent<Rigidbody>();
-
-        if (!view.IsMine)
-        {
-            GetComponentInChildren<Camera>().enabled = false;
-        }
-        else
-        {
-            GetComponentInChildren<SkinnedMeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-        }
+        
+        GetComponentInChildren<SkinnedMeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        GetComponentInChildren<Canvas>().enabled = true;
+            
 
     }
 
@@ -82,34 +78,33 @@ public class PlayerControllerRB_2 : MonoBehaviour
         playerScale = transform.localScale;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        if (Alive)
+        {
+            GameObject.Find("/CanvasController").GetComponent<CanvasGameController>().HideLobbyUI();
+        }
+        
     }
 
 
     private void FixedUpdate()
     {
-        if (view.IsMine)
-        {
-            Movement();
-            animator.SetBool("IsRunning", Math.Abs(Input.GetAxisRaw("Horizontal")) > 0.2 || Math.Abs(Input.GetAxisRaw("Vertical")) > 0.2);
-            animator.SetBool("IsJumping", !grounded);
-        }
+        Movement();
+        animator.SetBool("IsRunning", Math.Abs(Input.GetAxisRaw("Horizontal")) > 0.2 || Math.Abs(Input.GetAxisRaw("Vertical")) > 0.2);
+        animator.SetBool("IsJumping", !grounded);
+
     }
 
     private void LateUpdate()
     {
-        if (view.IsMine)
-        {
-            HandleMouseInput();
-            //view.RPC("HeadRotate", RpcTarget.All);
-        }
+      
+        HandleMouseInput();
+
+
     }
 
     private void Update()
     {
-        if (view.IsMine) { 
-            MyInput();
-            
-        }
+         MyInput();
     }
 
     /// <summary>
@@ -331,5 +326,5 @@ public class PlayerControllerRB_2 : MonoBehaviour
     private void StopGrounded()
     {
         grounded = false;
-    }
+    }    
 }

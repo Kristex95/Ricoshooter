@@ -6,7 +6,7 @@ public class BulletScript : MonoBehaviour
 {
     private Rigidbody rb;
     Vector3 direction;
-    Vector3 lastVelocity;
+    float lastMagnitude;
 
     [SerializeField] float Speed = 10f;
     [SerializeField] float Damage = 25f;
@@ -14,21 +14,44 @@ public class BulletScript : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        direction = new Vector3(1, 0, 0);
+        direction = transform.forward;
+    }
+    private void Start()
+    {
+        rb.velocity = direction.normalized * Speed * Time.deltaTime;
+        lastMagnitude = rb.velocity.magnitude;
+        //Debug.Log("Start speed: " + direction * Speed * Time.deltaTime);
     }
 
-    // Update is called once per frame
-    void Start()
-    {
-        rb.AddForce(direction * Speed * Time.deltaTime, ForceMode.Impulse);
-        lastVelocity = rb.velocity;
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        var currentSpeed = lastVelocity.magnitude;
-        direction = Vector3.Reflect(direction, collision.contacts[0].normal);
-        rb.velocity = Vector3.zero;
-        rb.AddForce(direction * Speed * Time.deltaTime, ForceMode.Impulse);
+        //pv.RPC("Reflect", RpcTarget.AllBuffered, collision);
+        if (collision.gameObject.layer == 7)
+        {
+            Destroy(gameObject);
+            PlayerControllerRB_2 collController = collision.gameObject.GetComponent<PlayerControllerRB_2>();
+
+            //collController.TakeDamage(Damage);
+        }
+        else
+        {
+            Reflect(collision);
+        }
+        
+
+
+        //Debug.Log("Updated speed: " + direction * Speed * Time.deltaTime);
+        //rb.AddForce(direction.normalized * Speed * Time.deltaTime, ForceMode.Impulse);
+    }
+
+    void Reflect(Collision collision)
+    {
+        if (collision.gameObject.layer == 6)
+        {
+            direction = Vector3.Reflect(direction.normalized, collision.contacts[0].normal);
+            rb.velocity = direction * lastMagnitude;
+        }
+        
     }
 }

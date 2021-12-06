@@ -2,6 +2,12 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
+/Ricoshooter_Game
+/Ricoshooter FTS/Assets/Photon
+/Ricoshooter FTS/Library
+/Ricoshooter FTS/Assets/
+/Ricoshooter FTS/Logs/
+
 /Ricoshooter_Game/Assets/Photon
 /Ricoshooter_Game/Library
 /Ricoshooter_Game/Builds/
